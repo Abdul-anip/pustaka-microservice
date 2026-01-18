@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'Maven 3.9'
+        jdk 'JDK 21'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out source code...'
+                checkout scm
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                dir('api_gateway') {
+                    echo 'Building API Gateway...'
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                dir('api_gateway') {
+                    echo 'Running tests...'
+                    sh 'mvn test'
+                }
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo 'Building Docker image...'
+                    sh 'docker build -t api-gateway:${BUILD_NUMBER} ./api_gateway'
+                    sh 'docker tag api-gateway:${BUILD_NUMBER} api-gateway:latest'
+                }
+            }
+        }
+        
+        stage('Verify Image') {
+            steps {
+                echo 'Verifying Docker image...'
+                sh 'docker images | grep api-gateway'
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo '✅ API Gateway pipeline completed successfully!'
+        }
+        failure {
+            echo '❌ API Gateway pipeline failed!'
+        }
+    }
+}

@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'Maven 3.9'
+        jdk 'JDK 21'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out source code...'
+                checkout scm
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                dir('buku') {
+                    echo 'Building Buku Service...'
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                dir('buku') {
+                    echo 'Running tests...'
+                    sh 'mvn test'
+                }
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo 'Building Docker image...'
+                    sh 'docker build -t buku-service:${BUILD_NUMBER} ./buku'
+                    sh 'docker tag buku-service:${BUILD_NUMBER} buku-service:latest'
+                }
+            }
+        }
+        
+        stage('Verify Image') {
+            steps {
+                echo 'Verifying Docker image...'
+                sh 'docker images | grep buku-service'
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo '✅ Buku Service pipeline completed successfully!'
+        }
+        failure {
+            echo '❌ Buku Service pipeline failed!'
+        }
+    }
+}

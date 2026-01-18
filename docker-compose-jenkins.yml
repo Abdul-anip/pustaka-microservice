@@ -1,0 +1,47 @@
+
+
+services:
+  jenkins:
+    build: ./jenkins
+    # image: jenkins/jenkins:lts-jdk21
+    container_name: jenkins
+    privileged: true
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./:/workspace
+
+    networks:
+      - jenkins-network
+      - elk
+    restart: unless-stopped
+
+  docker-dind:
+    image: docker:dind
+    container_name: jenkins-docker
+    privileged: true
+    environment:
+      - DOCKER_TLS_CERTDIR=/certs
+    volumes:
+      - jenkins-docker-certs:/certs/client
+      - jenkins_home:/var/jenkins_home
+    networks:
+      - jenkins-network
+    command: --storage-driver=overlay2
+    restart: unless-stopped
+
+networks:
+  jenkins-network:
+    driver: bridge
+  elk:
+    external: true
+
+volumes:
+  jenkins_home:
+    driver: local
+  jenkins-docker-certs:
+    driver: local

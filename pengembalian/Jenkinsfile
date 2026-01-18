@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'Maven 3.9'
+        jdk 'JDK 21'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out source code...'
+                checkout scm
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                dir('pengembalian') {
+                    echo 'Building Pengembalian Service...'
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                dir('pengembalian') {
+                    echo 'Running tests...'
+                    sh 'mvn test'
+                }
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo 'Building Docker image...'
+                    sh 'docker build -t pengembalian-service:${BUILD_NUMBER} ./pengembalian'
+                    sh 'docker tag pengembalian-service:${BUILD_NUMBER} pengembalian-service:latest'
+                }
+            }
+        }
+        
+        stage('Verify Image') {
+            steps {
+                echo 'Verifying Docker image...'
+                sh 'docker images | grep pengembalian-service'
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo '✅ Pengembalian Service pipeline completed successfully!'
+        }
+        failure {
+            echo '❌ Pengembalian Service pipeline failed!'
+        }
+    }
+}

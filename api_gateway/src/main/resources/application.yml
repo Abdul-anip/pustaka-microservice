@@ -1,0 +1,36 @@
+server:
+    port: 9000
+    
+spring:
+    application:
+        name: API-GATEWAY
+    cloud:
+        gateway:
+          server:
+            webmvc:
+              routes:
+                  - id: ANGGOTA-SERVICE
+                    uri: lb://ANGGOTA
+                    predicates: 
+                      - Path=/api/anggota/**
+                  - id: BUKU-SERVICE
+                    uri: lb://BUKU
+                    predicates: 
+                      - Path=/api/buku/**
+                  - id: PEMINJAMAN-SERVICE
+                    uri: lb://PEMINJAMAN
+                    predicates: 
+                      - Path=/api/peminjaman/**
+                  - id: PENGEMBALIAN-SERVICE
+                    uri: lb://PENGEMBALIAN
+                    predicates: 
+                      - Path=/api/pengembalian/**
+eureka:
+    client:
+        register-with-eureka: true
+        fetch-registry: true
+        service-url:
+            defaultZone: http://localhost:8761/eureka/
+    instance: 
+        hostname: localhost
+        prefer-ip-address: true

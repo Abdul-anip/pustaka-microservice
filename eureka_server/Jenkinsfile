@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'Maven 3.9'
+        jdk 'JDK 21'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out source code...'
+                checkout scm
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                dir('eureka_server') {
+                    echo 'Building Eureka Server...'
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                dir('eureka_server') {
+                    echo 'Running tests...'
+                    sh 'mvn test'
+                }
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo 'Building Docker image...'
+                    sh 'docker build -t eureka-server:${BUILD_NUMBER} ./eureka_server'
+                    sh 'docker tag eureka-server:${BUILD_NUMBER} eureka-server:latest'
+                }
+            }
+        }
+        
+        stage('Verify Image') {
+            steps {
+                echo 'Verifying Docker image...'
+                sh 'docker images | grep eureka-server'
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo '✅ Eureka Server pipeline completed successfully!'
+        }
+        failure {
+            echo '❌ Eureka Server pipeline failed!'
+        }
+    }
+}

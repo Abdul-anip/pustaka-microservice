@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'Maven 3.9'
+        jdk 'JDK 21'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out source code...'
+                checkout scm
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                dir('peminjaman') {
+                    echo 'Building Peminjaman Service...'
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                dir('peminjaman') {
+                    echo 'Running tests...'
+                    sh 'mvn test'
+                }
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo 'Building Docker image...'
+                    sh 'docker build -t peminjaman-service:${BUILD_NUMBER} ./peminjaman'
+                    sh 'docker tag peminjaman-service:${BUILD_NUMBER} peminjaman-service:latest'
+                }
+            }
+        }
+        
+        stage('Verify Image') {
+            steps {
+                echo 'Verifying Docker image...'
+                sh 'docker images | grep peminjaman-service'
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo '✅ Peminjaman Service pipeline completed successfully!'
+        }
+        failure {
+            echo '❌ Peminjaman Service pipeline failed!'
+        }
+    }
+}

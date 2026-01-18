@@ -1,0 +1,74 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-AnggotaApplication<anggota>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.asyrafil.anggota.AnggotaApplication",
+            "projectName": "anggota",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ApiGatewayApplication<api_gateway>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.asyrafil.api_gateway.ApiGatewayApplication",
+            "projectName": "api_gateway",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-BukuApplication<buku>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.asyrafil.buku.BukuApplication",
+            "projectName": "buku",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-EmailApplication<email>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.asyrafil.email.EmailApplication",
+            "projectName": "email",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-EurekaServerApplication<eureka-server>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.asyrafil.eureka_server.EurekaServerApplication",
+            "projectName": "eureka-server",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-PeminjamanApplication<peminjaman>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.asyrafil.peminjaman.PeminjamanApplication",
+            "projectName": "peminjaman",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-PengembalianApplication<pengembalian>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.asyrafil.pengembalian.PengembalianApplication",
+            "projectName": "pengembalian",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
