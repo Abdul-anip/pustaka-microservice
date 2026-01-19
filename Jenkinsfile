@@ -25,7 +25,9 @@ pipeline {
                     steps {
                         dir('eureka_server') {
                             echo 'Building Eureka Server...'
-                            sh 'mvn clean package -DskipTests'
+                            retry(3) {
+                                sh 'mvn clean package -DskipTests'
+                            }
                         }
                     }
                 }
@@ -34,7 +36,9 @@ pipeline {
                     steps {
                         dir('api_gateway') {
                             echo 'Building API Gateway...'
-                            sh 'mvn clean package -DskipTests'
+                            retry(3) {
+                                sh 'mvn clean package -DskipTests'
+                            }
                         }
                     }
                 }
@@ -43,7 +47,9 @@ pipeline {
                     steps {
                         dir('anggota') {
                             echo 'Building Anggota Service...'
-                            sh 'mvn clean package -DskipTests'
+                            retry(3) {
+                                sh 'mvn clean package -DskipTests'
+                            }
                         }
                     }
                 }
@@ -52,7 +58,9 @@ pipeline {
                     steps {
                         dir('buku') {
                             echo 'Building Buku Service...'
-                            sh 'mvn clean package -DskipTests'
+                            retry(3) {
+                                sh 'mvn clean package -DskipTests'
+                            }
                         }
                     }
                 }
@@ -61,7 +69,9 @@ pipeline {
                     steps {
                         dir('peminjaman') {
                             echo 'Building Peminjaman Service...'
-                            sh 'mvn clean package -DskipTests'
+                            retry(3) {
+                                sh 'mvn clean package -DskipTests'
+                            }
                         }
                     }
                 }
@@ -70,7 +80,9 @@ pipeline {
                     steps {
                         dir('pengembalian') {
                             echo 'Building Pengembalian Service...'
-                            sh 'mvn clean package -DskipTests'
+                            retry(3) {
+                                sh 'mvn clean package -DskipTests'
+                            }
                         }
                     }
                 }
@@ -79,7 +91,9 @@ pipeline {
                     steps {
                         dir('email') {
                             echo 'Building Email Service...'
-                            sh 'mvn clean package -DskipTests'
+                            retry(3) {
+                                sh 'mvn clean package -DskipTests'
+                            }
                         }
                     }
                 }
@@ -92,7 +106,9 @@ pipeline {
                     steps {
                         dir('eureka_server') {
                             echo 'Testing Eureka Server...'
-                            sh 'mvn test'
+                            retry(3) {
+                                sh 'mvn test'
+                            }
                         }
                     }
                 }
@@ -101,7 +117,9 @@ pipeline {
                     steps {
                         dir('api_gateway') {
                             echo 'Testing API Gateway...'
-                            sh 'mvn test'
+                            retry(3) {
+                                sh 'mvn test'
+                            }
                         }
                     }
                 }
@@ -110,7 +128,9 @@ pipeline {
                     steps {
                         dir('anggota') {
                             echo 'Testing Anggota Service...'
-                            sh 'mvn test'
+                            retry(3) {
+                                sh 'mvn test'
+                            }
                         }
                     }
                 }
@@ -119,7 +139,9 @@ pipeline {
                     steps {
                         dir('buku') {
                             echo 'Testing Buku Service...'
-                            sh 'mvn test'
+                            retry(3) {
+                                sh 'mvn test'
+                            }
                         }
                     }
                 }
@@ -128,7 +150,9 @@ pipeline {
                     steps {
                         dir('peminjaman') {
                             echo 'Testing Peminjaman Service...'
-                            sh 'mvn test'
+                            retry(3) {
+                                sh 'mvn test'
+                            }
                         }
                     }
                 }
@@ -137,7 +161,9 @@ pipeline {
                     steps {
                         dir('pengembalian') {
                             echo 'Testing Pengembalian Service...'
-                            sh 'mvn test'
+                            retry(3) {
+                                sh 'mvn test'
+                            }
                         }
                     }
                 }
@@ -146,7 +172,9 @@ pipeline {
                     steps {
                         dir('email') {
                             echo 'Testing Email Service...'
-                            sh 'mvn test'
+                            retry(3) {
+                                sh 'mvn test'
+                            }
                         }
                     }
                 }
