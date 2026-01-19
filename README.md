@@ -87,3 +87,220 @@ Daftar layanan yang tersedia dalam repositori ini:
 - **Peminjaman Service**: Logika peminjaman buku (Port 8083)
 - **Pengembalian Service**: Logika pengembalian buku (Port 8084)
 - **Email Service**: Layanan notifikasi email (Port 8085)
+
+---
+
+### 3. Monitoring Stack (Prometheus + Grafana + Zipkin)
+Digunakan untuk monitoring metrics, visualization, dan distributed tracing.
+
+**Cara Menjalankan:**
+```bash
+docker-compose -f docker-compose-monitoring.yml up -d
+```
+
+**Akses Layanan:**
+- **Prometheus (Metrics):** [http://localhost:9090](http://localhost:9090)
+- **Grafana (Dashboards):** [http://localhost:3000](http://localhost:3000) - Login: admin/admin
+- **Zipkin (Distributed Tracing):** [http://localhost:9411](http://localhost:9411)
+
+**📊 Setup Guide:**  
+Lihat [MONITORING_SETUP.md](MONITORING_SETUP.md) untuk panduan lengkap instalasi dan konfigurasi.
+
+**Metrics yang di-monitor:**
+- JVM Memory, CPU, Threads, GC
+- HTTP Requests (count, latency, errors)
+- Database connection pool
+- RabbitMQ queue metrics
+- Custom business metrics
+
+---
+
+## 🔗 Quick Start
+
+### 1. Start Infrastructure
+```bash
+# Start ELK Stack (Logging)
+docker-compose -f docker-compose-elk.yml up -d
+
+# Start Monitoring Stack (Metrics & Tracing)
+docker-compose -f docker-compose-monitoring.yml up -d
+
+# Optional: Start Jenkins (CI/CD)
+docker-compose -f docker-compose-jenkins.yml up -d
+```
+
+### 2. Build & Start Application
+```bash
+# Using Jenkins: Run the pipeline, atau
+
+# Manual build:
+mvn clean package -DskipTests
+
+# Build Docker images (via Jenkins or manual)
+# See Jenkinsfile for build commands
+
+# Start all microservices
+docker-compose -f docker-compose-app.yml up -d
+```
+
+### 3. Verify Services
+```bash
+# Check running containers
+docker ps
+
+# Check Eureka Dashboard
+curl http://localhost:8761
+
+# Check service health
+curl http://localhost:8081/actuator/health
+```
+
+---
+
+## 📊 Monitoring & Observability
+
+### Logging (ELK Stack)
+- **Kibana**: Centralized log viewing and analysis
+- **Elasticsearch**: Log storage and search
+- **Logstash**: Log aggregation and processing
+
+### Metrics (Prometheus + Grafana)
+- **Prometheus**: Time-series metrics database
+- **Grafana**: Metrics visualization and dashboards
+- Real-time monitoring of all microservices
+- Pre-built Spring Boot dashboards
+
+### Tracing (Zipkin)
+- Distributed request tracing across services
+- Latency analysis and bottleneck identification
+- Service dependency visualization
+
+---
+
+## 🌐 Access URLs
+
+| Service | URL | Credentials |
+|---------|-----|-------------|
+| Eureka Dashboard | http://localhost:8761 | - |
+| API Gateway | http://localhost:9000 | - |
+| Prometheus | http://localhost:9090 | - |
+| Grafana | http://localhost:3000 | admin / admin |
+| Zipkin | http://localhost:9411 | - |
+| Kibana | http://localhost:5601 | - |
+| RabbitMQ Management | http://localhost:15672 | guest / guest |
+| Jenkins | http://localhost:8080 | - |
+
+---
+
+## 📝 API Endpoints
+
+All APIs accessible via API Gateway at `http://localhost:9000`
+
+### Anggota (Members)
+- `GET /api/anggota` - Get all members
+- `GET /api/anggota/{id}` - Get member by ID
+- `POST /api/anggota` - Create new member
+- `DELETE /api/anggota/{id}` - Delete member
+
+### Buku (Books)
+- `GET /api/buku` - Get all books
+- `GET /api/buku/{id}` - Get book by ID
+- `POST /api/buku` - Create new book
+- `DELETE /api/buku/{id}` - Delete book
+
+### Peminjaman (Borrowing)
+- `GET /api/peminjaman` - Get all borrowings
+- `GET /api/peminjaman/{id}` - Get borrowing by ID
+- `GET /api/peminjaman/buku/{id}` - Get borrowings by book ID
+- `POST /api/peminjaman` - Create new borrowing (sends email notification)
+- `DELETE /api/peminjaman/{id}` - Delete borrowing
+
+### Pengembalian (Return)
+- `GET /api/pengembalian` - Get all returns
+- `GET /api/pengembalian/{id}` - Get return by ID
+- `POST /api/pengembalian` - Process book return
+- `DELETE /api/pengembalian/{id}` - Delete return
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────┐
+│   Client    │
+└──────┬──────┘
+       │
+       v
+┌─────────────────┐     ┌──────────────┐
+│   API Gateway   │────▶│ Eureka Server│
+│    Port 9000    │     │  Port 8761   │
+└────────┬────────┘     └──────────────┘
+         │
+    ┌────┴────┬────────┬────────────┬────────────┐
+    v         v        v            v            v
+┌────────┐┌───────┐┌──────────┐┌──────────┐┌───────┐
+│Anggota ││ Buku  ││Peminjaman││Pengembalian││Email  │
+│ :8081  ││ :8082 ││  :8083   ││  :8084   ││ :8085 │
+└────────┘└───────┘└─────┬────┘└────┬─────┘└───┬───┘
+                         │           │          │
+                         v           v          v
+                    ┌────────────────────────────┐
+                    │       RabbitMQ             │
+                    │   Ports: 5672, 15672       │
+                    └────────────────────────────┘
+
+    ┌──────────────────────────────────────────┐
+    │         Monitoring & Observability        │
+    ├──────────────┬──────────────┬────────────┤
+    │  Prometheus  │   Grafana    │   Zipkin   │
+    │    :9090     │    :3000     │   :9411    │
+    └──────────────┴──────────────┴────────────┘
+
+    ┌──────────────────────────────────────────┐
+    │            Logging (ELK Stack)            │
+    ├──────────────┬──────────────┬────────────┤
+    │Elasticsearch │   Logstash   │   Kibana   │
+    │    :9200     │    :5000     │   :5601    │
+    └──────────────┴──────────────┴────────────┘
+```
+
+---
+
+## 🛠️ Technologies
+
+| Category | Technology | Version |
+|----------|-----------|---------|
+| Language | Java | 21 |
+| Framework | Spring Boot | 3.5.6 |
+| Cloud | Spring Cloud | 2025.0.0 |
+| Build Tool | Maven | 3.9 |
+| Service Discovery | Netflix Eureka | - |
+| API Gateway | Spring Cloud Gateway | - |
+| Database | H2 (In-Memory) | - |
+| Message Queue | RabbitMQ | 3-management-alpine |
+| Metrics | Prometheus | latest |
+| Visualization | Grafana | latest |
+| Distributed Tracing | Zipkin | latest |
+| Logging | ELK Stack | - |
+| CI/CD | Jenkins | - |
+| Container | Docker | - |
+| Orchestration | Docker Compose | - |
+
+---
+
+## 📖 Documentation
+
+- [MONITORING_SETUP.md](MONITORING_SETUP.md) - Complete monitoring setup guide
+- [Jenkinsfile](Jenkinsfile) - CI/CD pipeline configuration
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+---
+
+## 📄 License
+
+This project is open source and available under the MIT License.

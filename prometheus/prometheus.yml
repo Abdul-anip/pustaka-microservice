@@ -1,0 +1,51 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Eureka Server
+  - job_name: 'eureka-server'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['eureka-server:8761']
+
+  # API Gateway
+  - job_name: 'api-gateway'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['api-gateway:9000']
+
+  # Anggota Service
+  - job_name: 'anggota-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['anggota-service:8081']
+
+  # Buku Service
+  - job_name: 'buku-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['buku-service:8082']
+
+  # Peminjaman Service
+  - job_name: 'peminjaman-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['peminjaman-service:8083']
+
+  # Pengembalian Service
+  - job_name: 'pengembalian-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['pengembalian-service:8084']
+
+  # Email Service
+  - job_name: 'email-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['email-service:8085']

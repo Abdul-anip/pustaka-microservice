@@ -1,0 +1,29 @@
+# Add these lines to application.yml for services: eureka_server, api_gateway
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  health:
+    defaults:
+      enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans
+
+info:
+  app:
+    name: ${spring.application.name}
+    description: Library Management Microservice
+    version: 1.0.0
